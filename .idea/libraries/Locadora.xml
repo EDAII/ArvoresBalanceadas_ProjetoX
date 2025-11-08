@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Locadora">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Locadora.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
