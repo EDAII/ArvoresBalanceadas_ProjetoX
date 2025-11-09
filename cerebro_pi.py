@@ -1,7 +1,10 @@
+# --- ARQUIVO MODIFICADO: cerebro_pi.py ---
+
 from astar import AStar, find_path
 import config
 import math
 from avl_tree import AVLTree
+import log_manager # <-- MUDANÇA
 
 class CerebroPi(AStar):
     """
@@ -21,7 +24,7 @@ class CerebroPi(AStar):
         self.inventory_tree = AVLTree()
         self.active_job_key = None 
 
-    # --- Funções A* (sem mudança) ---
+    # --- Funções A* ---
     def neighbors(self, node):
         return self.mapa.get(node, {}).keys()
 
@@ -33,28 +36,23 @@ class CerebroPi(AStar):
         pos2 = self.posicoes_nos[n2]
         return math.dist(pos1, pos2)
     
-    # --- Gerenciamento de Pedidos (Modificado) ---
+    # --- Gerenciamento de Pedidos ---
 
     def _pedir_rota(self, no_destino_final):
         """
         Função interna. Calcula a rota e define o status de navegação.
         """
         
-        # --- ESTE BLOCO FOI CORRIGIDO ---
         if self.no_atual == no_destino_final:
-            print(f"Cérebro (Pi): Já estamos em '{no_destino_final}'. Entregando instantaneamente.")
-            # Esta é uma entrega self-contained. Não chamamos reportar_chegada_no().
-            # Nós apenas removemos o job da fila e continuamos PARADOS.
-            print(f"Cérebro (Pi): Entregando pacote {self.active_job_key}!")
+            log_manager.add_log(f"Cérebro (Pi): Já estamos em '{no_destino_final}'. Entregando instantaneamente.")
+            log_manager.add_log(f"Cérebro (Pi): Entregando pacote {self.active_job_key}!")
             self.inventory_tree.delete(self.active_job_key)
             self.active_job_key = None
             self.status = "PARADO" 
-            self.no_destino = None # Garante que está limpo
-            # self.no_atual continua sendo o nó correto ('B')
-            return None # Retorna None (sem comando de movimento)
-        # --- FIM DA CORREÇÃO ---
+            self.no_destino = None
+            return None 
 
-        print(f"Cérebro (Pi): Calculando rota de {self.no_atual} para {no_destino_final}...")
+        log_manager.add_log(f"Cérebro (Pi): Calculando rota de {self.no_atual} para {no_destino_final}...")
         caminho_iter = find_path(self.no_atual, no_destino_final, 
                                 neighbors_fnct=self.neighbors, 
                                 distance_between_fnct=self.distance_between, 
@@ -69,13 +67,13 @@ class CerebroPi(AStar):
             self.rota_calculada.pop(0) 
             self.proximo_no = self.rota_calculada.pop(0) 
 
-            print(f"Cérebro (Pi): Rota: {' -> '.join(rota_para_log)}")
-            print(f"Cérebro (Pi): Enviando Robô para {self.proximo_no}")
+            log_manager.add_log(f"Cérebro (Pi): Rota: {' -> '.join(rota_para_log)}")
+            log_manager.add_log(f"Cérebro (Pi): Enviando Robô para {self.proximo_no}")
             
             pos_alvo = self.posicoes_nos[self.proximo_no]
             return ("FRENTE", pos_alvo)
         else:
-            print(f"Cérebro (Pi): Erro - Rota de {self.no_atual} para {self.no_destino_final} não encontrada.")
+            log_manager.add_log(f"Cérebro (Pi): Erro - Rota de {self.no_atual} para {no_destino_final} não encontrada.")
             self.status = "ERRO"
             return None
 
@@ -89,8 +87,8 @@ class CerebroPi(AStar):
         
         if self.no_atual == self.no_destino:
             # Tarefa Concluída!
-            print(f"Cérebro (Pi): Chegamos ao destino final {self.no_destino}!")
-            print(f"Cérebro (Pi): Entregando pacote {self.active_job_key}!")
+            log_manager.add_log(f"Cérebro (Pi): Chegamos ao destino final {self.no_destino}!")
+            log_manager.add_log(f"Cérebro (Pi): Entregando pacote {self.active_job_key}!")
             
             self.inventory_tree.delete(self.active_job_key)
             self.active_job_key = None
@@ -105,7 +103,7 @@ class CerebroPi(AStar):
             return None
         
         self.proximo_no = self.rota_calculada.pop(0)
-        print(f"Cérebro (Pi): Chegou em {self.no_atual}. Enviando Robô para {self.proximo_no}")
+        log_manager.add_log(f"Cérebro (Pi): Chegou em {self.no_atual}. Enviando Robô para {self.proximo_no}")
         
         pos_alvo = self.posicoes_nos[self.proximo_no]
         return ("FRENTE", pos_alvo)
@@ -115,10 +113,10 @@ class CerebroPi(AStar):
         Adiciona um novo PEDIDO à fila (Árvore AVL).
         """
         if location_node not in self.mapa:
-            print(f"Cérebro (Pi): Ignorando pedido. Localização '{location_node}' não existe.")
+            log_manager.add_log(f"Cérebro (Pi): Ignorando pedido. Localização '{location_node}' não existe.")
             return False
 
-        print(f"Cérebro (Pi): Pedido {package_id} para {location_node} registrado na fila.")
+        log_manager.add_log(f"Cérebro (Pi): Pedido {package_id} para {location_node} registrado na fila.")
         self.inventory_tree.insert(package_id, location_node)
         return True
 
@@ -134,8 +132,8 @@ class CerebroPi(AStar):
                 self.active_job_key = proximo_pedido.key
                 destino = proximo_pedido.value
                 
-                print(f"--- Cérebro (Pi): Pegando novo trabalho da fila! ---")
-                print(f"--- Pedido ID: {self.active_job_key}, Destino: {destino} ---")
+                log_manager.add_log(f"--- Cérebro (Pi): Pegando novo trabalho da fila! ---")
+                log_manager.add_log(f"--- Pedido ID: {self.active_job_key}, Destino: {destino} ---")
                 
                 return self._pedir_rota(destino)
         

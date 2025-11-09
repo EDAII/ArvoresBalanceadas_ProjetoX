@@ -1,3 +1,5 @@
+# --- ARQUIVO MODIFICADO: main.py ---
+
 import pygame
 import sys
 import math
@@ -6,6 +8,7 @@ import robo
 import cerebro_pi
 import desenho
 import random
+import log_manager # <-- MUDANÇA
 
 def encontrar_no_clicado(pos_mouse):
     """ 
@@ -36,7 +39,7 @@ def main():
         font_media = pygame.font.SysFont('Calibri', 24)
         font_pequena = pygame.font.SysFont('Calibri', 20)
     except:
-        print("Aviso: Fonte 'Calibri' não encontrada. Usando fonte padrão.")
+        log_manager.add_log("Aviso: Fonte 'Calibri' não encontrada. Usando fonte padrão.") # <-- MUDANÇA
         font_titulo = pygame.font.Font(None, 28)
         font_media = pygame.font.Font(None, 24)
         font_pequena = pygame.font.Font(None, 20)
@@ -76,7 +79,7 @@ def main():
                             no_alvo = encontrar_no_clicado(pos_mundo_ajustada)
                             
                             if no_alvo:
-                                print(f"--- Usuário clicou no Nó (Mov. Manual): {no_alvo} ---")
+                                log_manager.add_log(f"--- Usuário clicou no Nó (Mov. Manual): {no_alvo} ---") # <-- MUDANÇA
                                 meu_pi.add_new_package(0, no_alvo)
             
             if event.type == pygame.KEYDOWN:
@@ -87,15 +90,15 @@ def main():
                 elif event.key == pygame.K_SPACE and not input_mode:
                     robot_is_active = not robot_is_active
                     if robot_is_active:
-                        print("--- ROBÔ INICIADO ---")
+                        log_manager.add_log("--- ROBÔ INICIADO ---") # <-- MUDANÇA
                     else:
-                        print("--- ROBÔ PAUSADO ---")
+                        log_manager.add_log("--- ROBÔ PAUSADO ---") # <-- MUDANÇA
                 
                 elif input_mode:
                     if event.key == pygame.K_RETURN:
                         destino_node = input_text.upper().strip()
                         if destino_node:
-                            print(f"--- Usuário criou Pedido para: {destino_node} ---")
+                            log_manager.add_log(f"--- Usuário criou Pedido para: {destino_node} ---") # <-- MUDANÇA
                             meu_pi.add_new_package(random.randint(1, 1000), destino_node)
                         
                         input_mode = False
@@ -110,22 +113,13 @@ def main():
                         input_text += event.unicode
 
         # --- 2. Atualizar Lógica (Update) ---
-        
         status_arduino = meu_robo.update(robot_is_active)
         
-        # --- MUDANÇA (CORREÇÃO) AQUI ---
-        # Comunicação: Arduino -> Pi
         if status_arduino == "CHEGUEI_INTERSECAO":
-            # Avisa o "Pi" que chegamos
-            comando_pi = meu_pi.reportar_chegada_no() # <-- CORRIGIDO: Captura o comando
-
-            # Comunicação: Pi -> Arduino
+            comando_pi = meu_pi.reportar_chegada_no()
             if comando_pi:
-                # O Pi deu um novo comando (ir para o próximo nó)
                 meu_robo.set_comando(comando_pi[0], comando_pi[1])
-        # --- FIM DA CORREÇÃO ---
         
-        # --- LÓGICA DE CONTROLE DO ROBÔ ---
         if robot_is_active and meu_pi.status == "PARADO":
             comando_pi = meu_pi.check_for_new_job()
             if comando_pi:

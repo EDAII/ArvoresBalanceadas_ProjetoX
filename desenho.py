@@ -1,5 +1,8 @@
+# --- ARQUIVO MODIFICADO: desenho.py ---
+
 import pygame
 import config
+import log_manager # <-- MUDANÇA
 
 # --- Funções Auxiliares de Desenho ---
 
@@ -40,7 +43,7 @@ def desenhar_avl_tree(surface, node, x, y, h_spacing, v_spacing, font):
         desenhar_avl_tree(surface, node.right, x_filho_dir, y_filho, h_spacing / 2, v_spacing, font)
 
 
-# --- NOVO PAINEL DE PEDIDOS (ESQUERDA) ---
+# --- PAINEL DE PEDIDOS (ESQUERDA) ---
 def desenhar_painel_pedidos(surface, font_titulo, font_media, font_pequena,
                             input_mode, input_text, robot_is_active):
     
@@ -56,7 +59,7 @@ def desenhar_painel_pedidos(surface, font_titulo, font_media, font_pequena,
     if input_mode:
         desenhar_texto(surface, "Novo Pedido:", (15, y), font_media, config.COR_VERDE)
         y += 30
-        desenhar_texto(surface, "Digite o Nó (A-I) e aperte ENTER:", (15, y), font_pequena)
+        desenhar_texto(surface, "Digite o Nó (A-P) e aperte ENTER:", (15, y), font_pequena)
         y += 25
         pygame.draw.rect(surface, config.COR_PRETO, (15, y, config.TELA_LARGURA_PEDIDOS - 30, 40))
         pygame.draw.rect(surface, config.COR_BRANCO, (15, y, config.TELA_LARGURA_PEDIDOS - 30, 40), 1)
@@ -71,7 +74,6 @@ def desenhar_painel_pedidos(surface, font_titulo, font_media, font_pequena,
     pygame.draw.line(surface, config.COR_CINZA, (10, y), (config.TELA_LARGURA_PEDIDOS - 10, y), 2)
     y += 30
     
-    # Botão Iniciar/Pausar
     if robot_is_active:
         desenhar_texto(surface, "Robô ATIVO", (15, y), font_media, config.COR_VERDE)
         y += 30
@@ -82,21 +84,31 @@ def desenhar_painel_pedidos(surface, font_titulo, font_media, font_pequena,
         desenhar_texto(surface, "Aperte 'ESPAÇO' para INICIAR", (15, y), font_pequena)
     y += 50
     
-    # Instruções de clique
+    # --- NOVO PAINEL: LOG DO SISTEMA (SUBSTITUI INSTRUÇÃO MANUAL) ---
     pygame.draw.line(surface, config.COR_CINZA, (10, y), (config.TELA_LARGURA_PEDIDOS - 10, y), 2)
     y += 30
-    desenhar_texto(surface, "Instrução Manual:", (10, y), font_titulo)
+    desenhar_texto(surface, "Log do Sistema:", (10, y), font_titulo)
     y += 40
-    desenhar_texto(surface, "Clique em um Nó (A-I) no", (15, y), font_media)
-    y += 30
-    desenhar_texto(surface, "mapa para um pedido de", (15, y), font_media)
-    y += 30
-    desenhar_texto(surface, "prioridade máxima (ID 0).", (15, y), font_media)
+
+    # Pega as mensagens do log_manager
+    mensagens = log_manager.get_messages()
+    
+    log_font = font_pequena
+    cor_log = config.COR_CINZA
+    altura_linha = log_font.get_height() + 3
+    
+    # Mostra as X últimas mensagens
+    for i, msg in enumerate(mensagens):
+        # Remove "---" para economizar espaço
+        msg_limpa = msg.replace("---", "")
+        
+        # Desenha a mensagem
+        desenhar_texto(surface, msg_limpa, (15, y + (i * altura_linha)), log_font, cor_log)
 
 
 # --- DASHBOARD (DIREITA) ---
 def desenhar_dashboard(surface, cerebro_pi, robo, font_titulo, font_media, font_pequena):
-    """ Desenha o painel de status da direita. (MODIFICADO) """
+    """ Desenha o painel de status da direita. """
     surface.fill(config.COR_CINZA_CLARO)
     
     y = 20 # Posição Y atual
