@@ -84,7 +84,7 @@ O projeto utiliza uma arquitetura "híbrida" desacoplada:
 </div>
 
 <div align="center">
-<img src="imagensReadme/projeto.pn" alt="inicial" style=" max-width: 50%; height: auto; margin-bottom: 20px;">
+<img src="imagensReadme/projeto.png" alt="inicial" style=" max-width: 50%; height: auto; margin-bottom: 20px;">
 </div>
 
 <div align="center">
