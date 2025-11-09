@@ -5,10 +5,13 @@ import config
 import robo
 import cerebro_pi
 import desenho
-import random # <-- NOVA IMPORTAÇÃO
+import random
 
 def encontrar_no_clicado(pos_mouse):
-    """ Verifica se o clique do mouse foi perto de um nó do mapa. """
+    """ 
+    Verifica se o clique do mouse foi perto de um nó do mapa.
+    Recebe a posição do mouse JÁ AJUSTADA para o painel do mundo.
+    """
     for nome_no, pos_no in config.POSICOES_NOS.items():
         if math.dist(pos_mouse, pos_no) < 30: # 30 pixels de raio
             return nome_no
@@ -19,34 +22,37 @@ def main():
     pygame.init()
     pygame.font.init()
     
-    # Criar a tela principal
     tela_principal = pygame.display.set_mode((config.TELA_LARGURA_TOTAL, config.TELA_ALTURA))
-    pygame.display.set_caption("Simulação Robô de Logística (Pi + Arduino + AVL)")
+    pygame.display.set_caption("Simulação Robô de Logística (AVL + A* + Fila)")
     
-    # Criar "sub-telas" (Surfaces) para o mundo e o dashboard
+    tela_pedidos = pygame.Surface((config.TELA_LARGURA_PEDIDOS, config.TELA_ALTURA))
     tela_mundo = pygame.Surface((config.TELA_LARGURA_MUNDO, config.TELA_ALTURA))
     tela_dashboard = pygame.Surface((config.TELA_LARGURA_DASHBOARD, config.TELA_ALTURA))
     
-    # Relógio para controlar o FPS
     clock = pygame.time.Clock()
     
-    # Fontes de texto
-    font_titulo = pygame.font.Font(None, 28)
-    font_media = pygame.font.Font(None, 24)
-    font_pequena = pygame.font.Font(None, 20)
+    try:
+        font_titulo = pygame.font.SysFont('Calibri', 28, bold=True)
+        font_media = pygame.font.SysFont('Calibri', 24)
+        font_pequena = pygame.font.SysFont('Calibri', 20)
+    except:
+        print("Aviso: Fonte 'Calibri' não encontrada. Usando fonte padrão.")
+        font_titulo = pygame.font.Font(None, 28)
+        font_media = pygame.font.Font(None, 24)
+        font_pequena = pygame.font.Font(None, 20)
     
     # --- Criar Objetos ---
-    
-    # 1. Cérebro (Pi)
     meu_pi = cerebro_pi.CerebroPi(config.MAPA_GRAFO, config.POSICOES_NOS)
-    
-    # 2. Robô (Arduino)
     pos_inicial = config.POSICOES_NOS[meu_pi.no_atual]
     meu_robo = robo.Robo(pos_inicial[0], pos_inicial[1])
     
-    # 3. Grupo de Sprites (para desenhar o robô)
     grupo_sprites = pygame.sprite.Group()
     grupo_sprites.add(meu_robo)
+
+    # --- Variáveis de Controle ---
+    input_mode = False
+    input_text = ""
+    robot_is_active = False # O robô começa PAUSADO
 
     # --- Loop Principal da Simulação ---
     rodando = True
@@ -58,72 +64,92 @@ def main():
                 rodando = False
             
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1: # Botão esquerdo
-                    # Verifica se o clique foi na tela_mundo
-                    if tela_mundo.get_rect().collidepoint(event.pos):
-                        no_alvo = encontrar_no_clicado(event.pos)
-                        if no_alvo:
-                            print(f"--- Usuário clicou no Nó: {no_alvo} ---")
-                            # Envia a ordem para o "Pi"
-                            comando_pi = meu_pi.pedir_rota(no_alvo)
-                            if comando_pi:
-                                # Envia o primeiro comando do "Pi" para o "Arduino"
-                                meu_robo.set_comando(comando_pi[0], comando_pi[1])
+                if event.button == 1: 
+                    x_pedidos_fim = config.TELA_LARGURA_PEDIDOS
+                    x_mundo_fim = x_pedidos_fim + config.TELA_LARGURA_MUNDO
+                    
+                    if event.pos[0] < x_pedidos_fim:
+                        pass 
+                    elif event.pos[0] < x_mundo_fim:
+                        if not input_mode:
+                            pos_mundo_ajustada = (event.pos[0] - x_pedidos_fim, event.pos[1])
+                            no_alvo = encontrar_no_clicado(pos_mundo_ajustada)
+                            
+                            if no_alvo:
+                                print(f"--- Usuário clicou no Nó (Mov. Manual): {no_alvo} ---")
+                                meu_pi.add_new_package(0, no_alvo)
             
-            # --- NOVO BLOCO DE EVENTO ---
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_n:
-                    # 'N' foi pressionado - Adiciona novo pacote
-                    print("--- Usuário apertou 'N' ---")
-                    
-                    # Gera dados aleatórios
-                    random_id = random.randint(1, 1000)
-                    random_node = random.choice(list(config.POSICOES_NOS.keys()))
-                    
-                    # Envia para o "Pi"
-                    meu_pi.add_new_package(random_id, random_node)
-        
+                if event.key == pygame.K_p and not input_mode:
+                    input_mode = True
+                    input_text = ""
+                
+                elif event.key == pygame.K_SPACE and not input_mode:
+                    robot_is_active = not robot_is_active
+                    if robot_is_active:
+                        print("--- ROBÔ INICIADO ---")
+                    else:
+                        print("--- ROBÔ PAUSADO ---")
+                
+                elif input_mode:
+                    if event.key == pygame.K_RETURN:
+                        destino_node = input_text.upper().strip()
+                        if destino_node:
+                            print(f"--- Usuário criou Pedido para: {destino_node} ---")
+                            meu_pi.add_new_package(random.randint(1, 1000), destino_node)
+                        
+                        input_mode = False
+                        input_text = ""
+                        
+                    elif event.key == pygame.K_ESCAPE:
+                        input_mode = False
+                        input_text = ""
+                    elif event.key == pygame.K_BACKSPACE:
+                        input_text = input_text[:-1]
+                    elif event.unicode.isalpha():
+                        input_text += event.unicode
+
         # --- 2. Atualizar Lógica (Update) ---
         
-        # Atualiza o "Arduino" (move o robô)
-        # (Correção de bug anterior: chamar o update do objeto, não do grupo)
-        status_arduino = meu_robo.update()
+        status_arduino = meu_robo.update(robot_is_active)
         
+        # --- MUDANÇA (CORREÇÃO) AQUI ---
         # Comunicação: Arduino -> Pi
         if status_arduino == "CHEGUEI_INTERSECAO":
             # Avisa o "Pi" que chegamos
-            comando_pi = meu_pi.reportar_chegada_no()
-            
+            comando_pi = meu_pi.reportar_chegada_no() # <-- CORRIGIDO: Captura o comando
+
             # Comunicação: Pi -> Arduino
             if comando_pi:
                 # O Pi deu um novo comando (ir para o próximo nó)
                 meu_robo.set_comando(comando_pi[0], comando_pi[1])
+        # --- FIM DA CORREÇÃO ---
+        
+        # --- LÓGICA DE CONTROLE DO ROBÔ ---
+        if robot_is_active and meu_pi.status == "PARADO":
+            comando_pi = meu_pi.check_for_new_job()
+            if comando_pi:
+                meu_robo.set_comando(comando_pi[0], comando_pi[1])
 
         # --- 3. Desenhar (Render) ---
-        
-        # Limpa as sub-telas
+        tela_pedidos.fill(config.COR_CINZA_CLARO)
         tela_mundo.fill(config.COR_PRETO)
         tela_dashboard.fill(config.COR_CINZA_CLARO)
         
-        # Desenha o mundo
-        desenho.desenhar_mapa(tela_mundo)
-        grupo_sprites.draw(tela_mundo) # Desenha o robô
-        
-        # Desenha o dashboard
+        desenho.desenhar_painel_pedidos(tela_pedidos, font_titulo, font_media, font_pequena,
+                                        input_mode, input_text, robot_is_active)
+        desenho.desenhar_mapa(tela_mundo, font_media)
+        grupo_sprites.draw(tela_mundo) 
         desenho.desenhar_dashboard(tela_dashboard, meu_pi, meu_robo, 
                                    font_titulo, font_media, font_pequena)
         
-        # Coloca as sub-telas na tela principal
-        tela_principal.blit(tela_mundo, (0, 0))
-        tela_principal.blit(tela_dashboard, (config.TELA_LARGURA_MUNDO, 0))
+        tela_principal.blit(tela_pedidos, (0, 0))
+        tela_principal.blit(tela_mundo, (config.TELA_LARGURA_PEDIDOS, 0))
+        tela_principal.blit(tela_dashboard, (config.TELA_LARGURA_PEDIDOS + config.TELA_LARGURA_MUNDO, 0))
         
-        # Atualiza o display
         pygame.display.flip()
-        
-        # Controla o FPS
-        clock.tick(60) # 60 FPS
+        clock.tick(60)
 
-    # --- Fim ---
     pygame.quit()
     sys.exit()
 

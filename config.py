@@ -1,10 +1,13 @@
 import pygame
 
 # CONFIGURAÇÃO DA TELA
+TELA_LARGURA_PEDIDOS = 300  # <-- NOVO PAINEL
 TELA_LARGURA_MUNDO = 800
 TELA_LARGURA_DASHBOARD = 400
-TELA_ALTURA = 800
-TELA_LARGURA_TOTAL = TELA_LARGURA_MUNDO + TELA_LARGURA_DASHBOARD
+TELA_ALTURA = 1050
+
+# --- MUDANÇA AQUI ---
+TELA_LARGURA_TOTAL = TELA_LARGURA_PEDIDOS + TELA_LARGURA_MUNDO + TELA_LARGURA_DASHBOARD
 
 # CORES (R, G, B)
 COR_PRETO = (20, 20, 20)
@@ -23,27 +26,20 @@ ROBO_TAMANHO = 40
 ROBO_VELOCIDADE = 3.0 # pixels por frame
 
 # --- O MAPA DO ARMAZÉM ---
-# (Este é o novo mapa 3x3)
-
-# 1. Posições dos Nós na tela (em pixels)
-#    (x, y) - Uma grade 3x3
+# (Mapa 3x3)
 POSICOES_NOS = {
     'A': (100, 100), 'B': (400, 100), 'C': (700, 100),
     'D': (100, 400), 'E': (400, 400), 'F': (700, 400),
     'G': (100, 700), 'H': (400, 700), 'I': (700, 700),
 }
 
-# 2. Conexões do Grafo e suas distâncias (pesos)
-#    (Distância de 300px entre cada nó)
 MAPA_GRAFO = {
     'A': {'B': 300, 'D': 300},
     'B': {'A': 300, 'C': 300, 'E': 300},
     'C': {'B': 300, 'F': 300},
-    
     'D': {'A': 300, 'E': 300, 'G': 300},
     'E': {'B': 300, 'D': 300, 'F': 300, 'H': 300},
     'F': {'C': 300, 'E': 300, 'I': 300},
-    
     'G': {'D': 300, 'H': 300},
     'H': {'E': 300, 'G': 300, 'I': 300},
     'I': {'F': 300, 'H': 300},

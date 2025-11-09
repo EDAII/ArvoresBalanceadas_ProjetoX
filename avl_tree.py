@@ -1,3 +1,5 @@
+# --- ARQUIVO MODIFICADO: avl_tree.py ---
+
 class Node:
     """ Um nó em uma Árvore AVL """
     def __init__(self, key, value):
@@ -12,13 +14,12 @@ class AVLTree:
     def __init__(self):
         self.root = None
 
+    # --- INSERÇÃO (Existente) ---
     def insert(self, key, value):
-        """ Interface pública para inserir um nó """
-        print(f"AVL: Inserindo {key}...")
+        print(f"AVL: Inserindo pedido {key}...")
         self.root = self._insert(self.root, key, value)
 
     def _insert(self, node, key, value):
-        # 1. Inserção normal de Árvore Binária de Busca (BST)
         if not node:
             return Node(key, value)
         elif key < node.key:
@@ -26,41 +27,94 @@ class AVLTree:
         else:
             node.right = self._insert(node.right, key, value)
 
-        # 2. Atualizar a altura do nó ancestral
-        node.height = 1 + max(self._get_height(node.left),
-                            self._get_height(node.right))
-
-        # 3. Obter o Fator de Balanço
+        node.height = 1 + max(self._get_height(node.left), self._get_height(node.right))
         balance = self._get_balance(node)
-        
-        # 4. Se estiver desbalanceado, rebalancear (4 casos)
 
-        # Caso 1: Rotação Simples à Direita (Left-Left)
         if balance > 1 and key < node.left.key:
             print(f"AVL: Rotação LL no nó {node.key}")
             return self._right_rotate(node)
-
-        # Caso 2: Rotação Simples à Esquerda (Right-Right)
         if balance < -1 and key > node.right.key:
             print(f"AVL: Rotação RR no nó {node.key}")
             return self._left_rotate(node)
-
-        # Caso 3: Rotação Dupla Esquerda-Direita (Left-Right)
         if balance > 1 and key > node.left.key:
             print(f"AVL: Rotação LR no nó {node.key}")
             node.left = self._left_rotate(node.left)
             return self._right_rotate(node)
-
-        # Caso 4: Rotação Dupla Direita-Esquerda (Right-Left)
         if balance < -1 and key < node.right.key:
             print(f"AVL: Rotação RL no nó {node.key}")
             node.right = self._right_rotate(node.right)
             return self._left_rotate(node)
-
-        # Retorna o nó (potencialmente) novo
         return node
 
-    # --- Funções Auxiliares de Rotação e Balanço ---
+    # --- REMOÇÃO (Nova) ---
+    def delete(self, key):
+        print(f"AVL: Removendo pedido {key}...")
+        self.root = self._delete(self.root, key)
+
+    def _delete(self, node, key):
+        if not node:
+            return node
+
+        # 1. Encontrar e deletar o nó
+        if key < node.key:
+            node.left = self._delete(node.left, key)
+        elif key > node.key:
+            node.right = self._delete(node.right, key)
+        else:
+            # Nó encontrado! Hora de deletar.
+            # Caso 1: Nó com 0 ou 1 filho
+            if node.left is None:
+                temp = node.right
+                node = None
+                return temp
+            elif node.right is None:
+                temp = node.left
+                node = None
+                return temp
+            
+            # Caso 2: Nó com 2 filhos
+            # Encontra o sucessor in-order (menor da sub-árvore direita)
+            temp = self._get_min_value_node(node.right)
+            node.key = temp.key
+            node.value = temp.value
+            node.right = self._delete(node.right, temp.key)
+
+        if node is None:
+            return node
+
+        # 2. Atualizar altura
+        node.height = 1 + max(self._get_height(node.left), self._get_height(node.right))
+        
+        # 3. Rebalancear
+        balance = self._get_balance(node)
+
+        # Rotação LL
+        if balance > 1 and self._get_balance(node.left) >= 0:
+            return self._right_rotate(node)
+        # Rotação RR
+        if balance < -1 and self._get_balance(node.right) <= 0:
+            return self._left_rotate(node)
+        # Rotação LR
+        if balance > 1 and self._get_balance(node.left) < 0:
+            node.left = self._left_rotate(node.left)
+            return self._right_rotate(node)
+        # Rotação RL
+        if balance < -1 and self._get_balance(node.right) > 0:
+            node.right = self._right_rotate(node.right)
+            return self._left_rotate(node)
+
+        return node
+
+    # --- FUNÇÕES AUXILIARES (Modificadas/Novas) ---
+
+    def get_min_node(self):
+        """ Retorna o nó com a menor chave (o próximo pedido) """
+        return self._get_min_value_node(self.root)
+
+    def _get_min_value_node(self, node):
+        if node is None or node.left is None:
+            return node
+        return self._get_min_value_node(node.left)
 
     def _get_height(self, node):
         if not node:
@@ -73,37 +127,19 @@ class AVLTree:
         return self._get_height(node.left) - self._get_height(node.right)
 
     def _left_rotate(self, z):
-        # z é o nó desbalanceado
         y = z.right
         T2 = y.left
-
-        # Executa a rotação
         y.left = z
         z.right = T2
-
-        # Atualiza alturas (IMPORTANTE: z primeiro, depois y)
-        z.height = 1 + max(self._get_height(z.left),
-                            self._get_height(z.right))
-        y.height = 1 + max(self._get_height(y.left),
-                            self._get_height(y.right))
-
-        # Retorna a nova raiz desta sub-árvore
+        z.height = 1 + max(self._get_height(z.left), self._get_height(z.right))
+        y.height = 1 + max(self._get_height(y.left), self._get_height(y.right))
         return y
 
     def _right_rotate(self, z):
-        # z é o nó desbalanceado
         y = z.left
         T3 = y.right
-
-        # Executa a rotação
         y.right = z
         z.left = T3
-
-        # Atualiza alturas (IMPORTANTE: z primeiro, depois y)
-        z.height = 1 + max(self._get_height(z.left),
-                            self._get_height(z.right))
-        y.height = 1 + max(self._get_height(y.left),
-                            self._get_height(y.right))
-
-        # Retorna a nova raiz desta sub-árvore
+        z.height = 1 + max(self._get_height(z.left), self._get_height(z.right))
+        y.height = 1 + max(self._get_height(y.left), self._get_height(y.right))
         return y
