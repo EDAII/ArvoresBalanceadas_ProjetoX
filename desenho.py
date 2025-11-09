@@ -140,7 +140,7 @@ def desenhar_dashboard(surface, cerebro_pi, robo, font_titulo, font_media, font_
     y += 30
     velocidade = config.ROBO_VELOCIDADE if robo.comando_atual == "FRENTE" else 0
     desenhar_texto(surface, f"Velocidade:", (15, y), font_media)
-    desenhar_texto(surface, f"{velocidade:.1f} px/f", (130, y), font_media)
+    desenhar_texto(surface, f"{velocidade:.1f} m/s", (130, y), font_media)
     y += 40
     desenhar_texto(surface, "Sensor QRE-8D:", (15, y), font_media)
     y += 40
