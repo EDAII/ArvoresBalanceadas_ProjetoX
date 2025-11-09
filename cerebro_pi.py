@@ -1,6 +1,7 @@
 from astar import AStar, find_path
 import config
 import math
+from avl_tree import AVLTree # <-- NOVA IMPORTAÇÃO
 
 class CerebroPi(AStar):
     """
@@ -18,6 +19,9 @@ class CerebroPi(AStar):
         self.no_destino = None
         self.rota_calculada = [] # Lista de nós (ex: ['A', 'B', 'D'])
         self.proximo_no = None
+        
+        # O inventário é a nossa Árvore AVL
+        self.inventory_tree = AVLTree() # <-- NOVA LINHA
 
     def neighbors(self, node):
         """ Método obrigatório do A* (retorna vizinhos) """
@@ -55,15 +59,20 @@ class CerebroPi(AStar):
         print(f"Cérebro (Pi): Calculando rota de {self.no_atual} para {no_destino_final}...")
         
         # Roda o A*
-        caminho_iter = find_path(self.no_atual, no_destino_final, neighbors_fnct=self.neighbors, distance_between_fnct=self.distance_between, heuristic_cost_estimate_fnct=self.heuristic_cost_estimate)
+        caminho_iter = find_path(self.no_atual, no_destino_final, 
+                                neighbors_fnct=self.neighbors, 
+                                distance_between_fnct=self.distance_between, 
+                                heuristic_cost_estimate_fnct=self.heuristic_cost_estimate)
+        
         if caminho_iter:
             self.rota_calculada = list(caminho_iter)
+            
+            # ANTES de modificar a lista, guarde a rota completa para o log
+            rota_para_log = list(self.rota_calculada) 
+            
             self.no_destino = no_destino_final
             self.status = "NAVEGANDO"
             
-            # ANTES de modificar a lista, guarde a rota completa para o log
-            rota_para_log = list(self.rota_calculada)
-
             # Remove o nó atual da rota e pega o próximo
             self.rota_calculada.pop(0) # Remove o self.no_atual
             self.proximo_no = self.rota_calculada.pop(0) # Pega o próximo destino
@@ -107,3 +116,15 @@ class CerebroPi(AStar):
         
         pos_alvo = self.posicoes_nos[self.proximo_no]
         return ("FRENTE", pos_alvo)
+
+    # --- NOVA FUNÇÃO ---
+    def add_new_package(self, package_id, location_node):
+        """
+        Adiciona um novo pacote ao inventário (Árvore AVL).
+        """
+        if location_node not in self.mapa:
+            print(f"Cérebro (Pi): Ignorando pacote. Localização '{location_node}' não existe.")
+            return
+
+        print(f"Cérebro (Pi): Pacote {package_id} registrado na localização {location_node}.")
+        self.inventory_tree.insert(package_id, location_node)

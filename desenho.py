@@ -25,8 +25,37 @@ def desenhar_mapa(surface):
         pygame.draw.circle(surface, config.COR_VERMELHO, pos, 20)
         desenhar_texto(surface, nome, (pos[0] + 25, pos[1] - 15), pygame.font.Font(None, 30))
 
+# --- NOVA FUNÇÃO ---
+def desenhar_avl_tree(surface, node, x, y, h_spacing, v_spacing, font):
+    """
+    Função recursiva para desenhar a Árvore AVL no dashboard.
+    """
+    if node is None:
+        return
+
+    # Desenha o Nó (círculo)
+    pygame.draw.circle(surface, config.COR_AZUL, (int(x), int(y)), 20)
+    # Desenha a Chave (ID)
+    desenhar_texto(surface, node.key, (int(x) - 12, int(y) - 10), font, config.COR_BRANCO)
+
+    # Prepara para desenhar filhos
+    y_filho = y + v_spacing
+    
+    # Desenha filho da Esquerda
+    if node.left:
+        x_filho_esq = x - h_spacing
+        pygame.draw.line(surface, config.COR_CINZA, (x, y + 20), (x_filho_esq, y_filho - 20), 2)
+        desenhar_avl_tree(surface, node.left, x_filho_esq, y_filho, h_spacing / 2, v_spacing, font)
+
+    # Desenha filho da Direita
+    if node.right:
+        x_filho_dir = x + h_spacing
+        pygame.draw.line(surface, config.COR_CINZA, (x, y + 20), (x_filho_dir, y_filho - 20), 2)
+        desenhar_avl_tree(surface, node.right, x_filho_dir, y_filho, h_spacing / 2, v_spacing, font)
+
+
 def desenhar_dashboard(surface, cerebro_pi, robo, font_titulo, font_media, font_pequena):
-    """ Desenha todo o painel de controle da direita. """
+    """ Desenha todo o painel de controle da direita. (MODIFICADO) """
     surface.fill(config.COR_CINZA_CLARO)
     
     # Posição Y atual (para desenhar linha por linha)
@@ -86,11 +115,30 @@ def desenhar_dashboard(surface, cerebro_pi, robo, font_titulo, font_media, font_
         desenhar_texto(surface, f"{i+1}", (pos_x + 10, y + 35), font_pequena)
     y += 80
     
-    # --- Painel 3: Ajuda ---
+    # --- Painel 3: Inventário (Árvore AVL) ---
+    pygame.draw.line(surface, config.COR_CINZA, (10, y), (config.TELA_LARGURA_DASHBOARD - 10, y), 2)
+    y += 30
+    desenhar_texto(surface, "Inventário (Árvore AVL)", (10, y), font_titulo, config.COR_AZUL_CLARO)
+    y += 50
+    
+    # Define a área de início da árvore
+    tree_start_x = config.TELA_LARGURA_DASHBOARD / 2
+    tree_start_y = y
+    # Desenha a árvore recursivamente
+    desenhar_avl_tree(surface, cerebro_pi.inventory_tree.root, 
+                      tree_start_x, tree_start_y, 
+                      h_spacing=100, v_spacing=60, font=font_media)
+    
+    # Pula um espaço grande para a árvore (pode precisar de ajuste)
+    y += 200 # <-- Reduzi o espaço pulado
+
+    # --- Painel 4: Ajuda ---
     pygame.draw.line(surface, config.COR_CINZA, (10, y), (config.TELA_LARGURA_DASHBOARD - 10, y), 2)
     y += 30
     desenhar_texto(surface, "Instruções:", (10, y), font_titulo)
     y += 40
-    desenhar_texto(surface, "Clique em um Nó (A, B, C, D)", (15, y), font_media)
+    desenhar_texto(surface, "Clique em um Nó (A-I) para mover.", (15, y), font_media)
     y += 30
-    desenhar_texto(surface, "para definir um novo destino.", (15, y), font_media)
+    desenhar_texto(surface, "Aperte 'N' para adicionar um", (15, y), font_media)
+    y += 30
+    desenhar_texto(surface, "pacote aleatório (ver árvore).", (15, y), font_media)

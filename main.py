@@ -5,6 +5,7 @@ import config
 import robo
 import cerebro_pi
 import desenho
+import random # <-- NOVA IMPORTAÇÃO
 
 def encontrar_no_clicado(pos_mouse):
     """ Verifica se o clique do mouse foi perto de um nó do mapa. """
@@ -20,10 +21,9 @@ def main():
     
     # Criar a tela principal
     tela_principal = pygame.display.set_mode((config.TELA_LARGURA_TOTAL, config.TELA_ALTURA))
-    pygame.display.set_caption("Simulação Robô de Logística (Pi + Arduino)")
+    pygame.display.set_caption("Simulação Robô de Logística (Pi + Arduino + AVL)")
     
     # Criar "sub-telas" (Surfaces) para o mundo e o dashboard
-    # Isso facilita desenhar e gerenciar as coordenadas
     tela_mundo = pygame.Surface((config.TELA_LARGURA_MUNDO, config.TELA_ALTURA))
     tela_dashboard = pygame.Surface((config.TELA_LARGURA_DASHBOARD, config.TELA_ALTURA))
     
@@ -69,10 +69,24 @@ def main():
                             if comando_pi:
                                 # Envia o primeiro comando do "Pi" para o "Arduino"
                                 meu_robo.set_comando(comando_pi[0], comando_pi[1])
+            
+            # --- NOVO BLOCO DE EVENTO ---
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_n:
+                    # 'N' foi pressionado - Adiciona novo pacote
+                    print("--- Usuário apertou 'N' ---")
+                    
+                    # Gera dados aleatórios
+                    random_id = random.randint(1, 1000)
+                    random_node = random.choice(list(config.POSICOES_NOS.keys()))
+                    
+                    # Envia para o "Pi"
+                    meu_pi.add_new_package(random_id, random_node)
         
         # --- 2. Atualizar Lógica (Update) ---
         
         # Atualiza o "Arduino" (move o robô)
+        # (Correção de bug anterior: chamar o update do objeto, não do grupo)
         status_arduino = meu_robo.update()
         
         # Comunicação: Arduino -> Pi
