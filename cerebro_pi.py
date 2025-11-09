@@ -42,15 +42,15 @@ class CerebroPi(AStar):
         """
         
         if self.no_atual == no_destino_final:
-            log_manager.add_log(f"Cérebro (Pi): Já estamos em '{no_destino_final}'. Entregando instantaneamente.")
-            log_manager.add_log(f"Cérebro (Pi): Entregando pacote {self.active_job_key}!")
+            log_manager.add_log(f"Raspberry: Já estamos em '{no_destino_final}'. Entregando instantaneamente.")
+            log_manager.add_log(f"Raspberry: Entregando pacote {self.active_job_key}!")
             self.inventory_tree.delete(self.active_job_key)
             self.active_job_key = None
             self.status = "PARADO" 
             self.no_destino = None
             return None 
 
-        log_manager.add_log(f"Cérebro (Pi): Calculando rota de {self.no_atual} para {no_destino_final}...")
+        log_manager.add_log(f"Raspberry: Calculando rota de {self.no_atual} para {no_destino_final}...")
         caminho_iter = find_path(self.no_atual, no_destino_final, 
                                 neighbors_fnct=self.neighbors, 
                                 distance_between_fnct=self.distance_between, 
@@ -65,13 +65,13 @@ class CerebroPi(AStar):
             self.rota_calculada.pop(0) 
             self.proximo_no = self.rota_calculada.pop(0) 
 
-            log_manager.add_log(f"Cérebro (Pi): Rota: {' -> '.join(rota_para_log)}")
-            log_manager.add_log(f"Cérebro (Pi): Enviando Robô para {self.proximo_no}")
+            log_manager.add_log(f"Raspberry: Rota: {' -> '.join(rota_para_log)}")
+            log_manager.add_log(f"Raspberry: Enviando Robô para {self.proximo_no}")
             
             pos_alvo = self.posicoes_nos[self.proximo_no]
             return ("FRENTE", pos_alvo)
         else:
-            log_manager.add_log(f"Cérebro (Pi): Erro - Rota de {self.no_atual} para {no_destino_final} não encontrada.")
+            log_manager.add_log(f"Raspberry: Erro - Rota de {self.no_atual} para {no_destino_final} não encontrada.")
             self.status = "ERRO"
             return None
 
@@ -85,8 +85,8 @@ class CerebroPi(AStar):
         
         if self.no_atual == self.no_destino:
             # Tarefa Concluída!
-            log_manager.add_log(f"Cérebro (Pi): Chegamos ao destino final {self.no_destino}!")
-            log_manager.add_log(f"Cérebro (Pi): Entregando pacote {self.active_job_key}!")
+            log_manager.add_log(f"Raspberry: Chegamos ao destino final {self.no_destino}!")
+            log_manager.add_log(f"Raspberry: Entregando pacote {self.active_job_key}!")
             
             self.inventory_tree.delete(self.active_job_key)
             self.active_job_key = None
@@ -101,7 +101,7 @@ class CerebroPi(AStar):
             return None
         
         self.proximo_no = self.rota_calculada.pop(0)
-        log_manager.add_log(f"Cérebro (Pi): Chegou em {self.no_atual}. Enviando Robô para {self.proximo_no}")
+        log_manager.add_log(f"Raspberry: Chegou em {self.no_atual}. Enviando Robô para {self.proximo_no}")
         
         pos_alvo = self.posicoes_nos[self.proximo_no]
         return ("FRENTE", pos_alvo)
@@ -111,10 +111,10 @@ class CerebroPi(AStar):
         Adiciona um novo PEDIDO à fila (Árvore AVL).
         """
         if location_node not in self.mapa:
-            log_manager.add_log(f"Cérebro (Pi): Ignorando pedido. Localização '{location_node}' não existe.")
+            log_manager.add_log(f"Raspberry: Ignorando pedido. Localização '{location_node}' não existe.")
             return False
 
-        log_manager.add_log(f"Cérebro (Pi): Pedido {package_id} para {location_node} registrado na fila.")
+        log_manager.add_log(f"Raspberry: Pedido {package_id} para {location_node} registrado na fila.")
         self.inventory_tree.insert(package_id, location_node)
         return True
 
@@ -130,7 +130,7 @@ class CerebroPi(AStar):
                 self.active_job_key = proximo_pedido.key
                 destino = proximo_pedido.value
                 
-                log_manager.add_log(f"--- Cérebro (Pi): Pegando novo trabalho da fila! ---")
+                log_manager.add_log(f"--- Raspberry: Pegando novo trabalho da fila! ---")
                 log_manager.add_log(f"--- Pedido ID: {self.active_job_key}, Destino: {destino} ---")
                 
                 return self._pedir_rota(destino)

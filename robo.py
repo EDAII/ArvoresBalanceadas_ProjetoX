@@ -38,7 +38,7 @@ class Robo(pygame.sprite.Sprite):
         self.sensores_simulados = [0, 0, 0, 0, 0, 0, 0, 0]
 
     def set_comando(self, comando, alvo_pos=None):
-        """ Recebe um comando do 'Pi' (CerebroPi) """
+        """ Recebe um comando do 'Pi' """
         self.comando_atual = comando
         
         if self.comando_atual == "FRENTE":
