@@ -82,25 +82,20 @@ def desenhar_painel_pedidos(surface, font_titulo, font_media, font_pequena,
         desenhar_texto(surface, "Aperte 'ESPAÇO' para INICIAR", (15, y), font_pequena)
     y += 50
     
-    # --- NOVO PAINEL: LOG DO SISTEMA (SUBSTITUI INSTRUÇÃO MANUAL) ---
+    # --- PAINEL: LOG DO SISTEMA ---
     pygame.draw.line(surface, config.COR_CINZA, (10, y), (config.TELA_LARGURA_PEDIDOS - 10, y), 2)
     y += 30
     desenhar_texto(surface, "Log do Sistema:", (10, y), font_titulo)
     y += 40
 
-    # Pega as mensagens do log_manager
     mensagens = log_manager.get_messages()
     
     log_font = font_pequena
     cor_log = config.COR_CINZA
     altura_linha = log_font.get_height() + 3
     
-    # Mostra as X últimas mensagens
     for i, msg in enumerate(mensagens):
-        # Remove "---" para economizar espaço
         msg_limpa = msg.replace("---", "")
-        
-        # Desenha a mensagem
         desenhar_texto(surface, msg_limpa, (15, y + (i * altura_linha)), log_font, cor_log)
 
 
@@ -112,7 +107,7 @@ def desenhar_dashboard(surface, cerebro_pi, robo, font_titulo, font_media, font_
     y = 20 # Posição Y atual
 
     # --- Painel 1: Cérebro (Pi) ---
-    desenhar_texto(surface, "Cérebro (Pi) - Status", (10, y), font_titulo, config.COR_AZUL_CLARO)
+    desenhar_texto(surface, "Raspberry Pi - Status", (10, y), font_titulo, config.COR_AZUL_CLARO)
     y += 40
     cor_status_pi = config.COR_VERDE if cerebro_pi.status == "NAVEGANDO" else config.COR_BRANCO
     desenhar_texto(surface, f"Status:", (15, y), font_media)
@@ -137,7 +132,7 @@ def desenhar_dashboard(surface, cerebro_pi, robo, font_titulo, font_media, font_
     # --- Painel 2: Controlador (Arduino) ---
     pygame.draw.line(surface, config.COR_CINZA, (10, y), (config.TELA_LARGURA_DASHBOARD - 10, y), 2)
     y += 20
-    desenhar_texto(surface, "Controlador (Arduino) - Status", (10, y), font_titulo, config.COR_AZUL_CLARO)
+    desenhar_texto(surface, "Esp32 - Status", (10, y), font_titulo, config.COR_AZUL_CLARO)
     y += 40
     cor_status_robo = config.COR_VERDE if robo.comando_atual == "FRENTE" else config.COR_BRANCO
     desenhar_texto(surface, f"Comando:", (15, y), font_media)
@@ -147,23 +142,45 @@ def desenhar_dashboard(surface, cerebro_pi, robo, font_titulo, font_media, font_
     desenhar_texto(surface, f"Velocidade:", (15, y), font_media)
     desenhar_texto(surface, f"{velocidade:.1f} px/f", (130, y), font_media)
     y += 40
-    desenhar_texto(surface, "Sensores QRE-8D (Simulado):", (15, y), font_media)
+    desenhar_texto(surface, "Sensor QRE-8D:", (15, y), font_media)
     y += 40
-    sensor_x_start = 30
+    sensor_x_start = (config.TELA_LARGURA_DASHBOARD - (8 * 40 - 10)) / 2 # Centraliza os sensores
     for i, valor_sensor in enumerate(robo.sensores_simulados):
         cor_sensor = config.COR_VERDE if valor_sensor == 1 else config.COR_CINZA
-        pos_x = sensor_x_start + (i * (30 + 10))
+        pos_x = sensor_x_start + (i * 40) # 30 = tamanho, 10 = espaço
         pygame.draw.rect(surface, cor_sensor, (pos_x, y, 30, 30))
         desenhar_texto(surface, f"{i+1}", (pos_x + 10, y + 35), font_pequena)
     y += 60
 
-    # --- Painel 3: Fila de Pedidos (Árvore AVL) ---
+    # --- MUDANÇA AQUI: Painel 3 e 4 para Árvores Lado a Lado ---
     pygame.draw.line(surface, config.COR_CINZA, (10, y), (config.TELA_LARGURA_DASHBOARD - 10, y), 2)
     y += 20
-    desenhar_texto(surface, "Fila de Pedidos (Árvore AVL)", (10, y), font_titulo, config.COR_AZUL_CLARO)
-    y += 50
-    tree_start_x = config.TELA_LARGURA_DASHBOARD / 2
-    tree_start_y = y
+    desenhar_texto(surface, "Filas de Pedidos", (10, y), font_titulo, config.COR_AZUL_CLARO)
+    y += 40
+
+    # --- Painel 3: Fila de Pedidos (Árvore AVL) ---
+    # Metade Esquerda do Painel
+    avl_panel_x = config.TELA_LARGURA_DASHBOARD / 4 
+    avl_tree_start_y = y + 40
+    desenhar_texto(surface, "Árvore AVL", (avl_panel_x - 50, y), font_media, config.COR_BRANCO)
+    
     desenhar_avl_tree(surface, cerebro_pi.inventory_tree.root, 
-                      tree_start_x, tree_start_y, 
-                      h_spacing=100, v_spacing=60, font=font_media)
+                      avl_panel_x, avl_tree_start_y, 
+                      h_spacing=50, v_spacing=50, font=font_pequena) # Espaçamento menor
+
+    # --- Painel 4: Fila de Pedidos (Árvore Red-Black) ---
+    # Metade Direita do Painel
+    rb_panel_x = (config.TELA_LARGURA_DASHBOARD / 4) * 3
+    rb_tree_start_y = y + 40
+    desenhar_texto(surface, "Árvore Red-Black", (rb_panel_x - 70, y), font_media, config.COR_BRANCO)
+
+    # Placeholder para a futura árvore Red-Black
+    # No futuro, chamaríamos uma função como:
+    # desenhar_rb_tree(surface, cerebro_pi.rb_tree.root, rb_panel_x, rb_tree_start_y, ...)
+    
+    # Desenha um placeholder visual:
+    desenhar_texto(surface, "[Em Breve]", (rb_panel_x - 40, rb_tree_start_y + 40), font_pequena, config.COR_CINZA)
+    # Exemplo de nó raiz (preto) e filho (vermelho)
+    pygame.draw.circle(surface, config.COR_PRETO, (int(rb_panel_x), int(rb_tree_start_y)), 20)
+    pygame.draw.line(surface, config.COR_CINZA, (rb_panel_x, rb_tree_start_y+20), (rb_panel_x+30, rb_tree_start_y+50-20), 2)
+    pygame.draw.circle(surface, config.COR_VERMELHO, (int(rb_panel_x + 30), int(rb_tree_start_y + 50)), 20)
