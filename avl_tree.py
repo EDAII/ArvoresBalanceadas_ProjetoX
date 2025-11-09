@@ -1,6 +1,4 @@
-# --- ARQUIVO MODIFICADO: avl_tree.py ---
-
-import log_manager # <-- MUDANÇA
+import log_manager 
 
 class Node:
     """ Um nó em uma Árvore AVL """
@@ -33,24 +31,24 @@ class AVLTree:
         balance = self._get_balance(node)
 
         if balance > 1 and key < node.left.key:
-            log_manager.add_log(f"AVL: Rotação LL no nó {node.key}") # <-- MUDANÇA
+            log_manager.add_log(f"AVL: Rotação LL no nó {node.key}") 
             return self._right_rotate(node)
         if balance < -1 and key > node.right.key:
-            log_manager.add_log(f"AVL: Rotação RR no nó {node.key}") # <-- MUDANÇA
+            log_manager.add_log(f"AVL: Rotação RR no nó {node.key}")
             return self._left_rotate(node)
         if balance > 1 and key > node.left.key:
-            log_manager.add_log(f"AVL: Rotação LR no nó {node.key}") # <-- MUDANÇA
+            log_manager.add_log(f"AVL: Rotação LR no nó {node.key}")
             node.left = self._left_rotate(node.left)
             return self._right_rotate(node)
         if balance < -1 and key < node.right.key:
-            log_manager.add_log(f"AVL: Rotação RL no nó {node.key}") # <-- MUDANÇA
+            log_manager.add_log(f"AVL: Rotação RL no nó {node.key}")
             node.right = self._right_rotate(node.right)
             return self._left_rotate(node)
         return node
 
     # --- REMOÇÃO ---
     def delete(self, key):
-        log_manager.add_log(f"AVL: Removendo pedido {key}...") # <-- MUDANÇA
+        log_manager.add_log(f"AVL: Removendo pedido {key}...")
         self.root = self._delete(self.root, key)
 
     def _delete(self, node, key):

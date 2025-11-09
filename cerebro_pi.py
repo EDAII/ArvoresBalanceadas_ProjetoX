@@ -1,10 +1,8 @@
-# --- ARQUIVO MODIFICADO: cerebro_pi.py ---
-
 from astar import AStar, find_path
 import config
 import math
 from avl_tree import AVLTree
-import log_manager # <-- MUDANÇA
+import log_manager 
 
 class CerebroPi(AStar):
     """

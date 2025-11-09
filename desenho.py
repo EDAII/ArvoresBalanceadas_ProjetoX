@@ -1,8 +1,6 @@
-# --- ARQUIVO MODIFICADO: desenho.py ---
-
 import pygame
 import config
-import log_manager # <-- MUDANÇA
+import log_manager 
 
 # --- Funções Auxiliares de Desenho ---
 

@@ -1,5 +1,3 @@
-# --- ARQUIVO MODIFICADO: main.py ---
-
 import pygame
 import sys
 import math
@@ -8,7 +6,7 @@ import robo
 import cerebro_pi
 import desenho
 import random
-import log_manager # <-- MUDANÇA
+import log_manager 
 
 def encontrar_no_clicado(pos_mouse):
     """ 
@@ -26,7 +24,7 @@ def main():
     pygame.font.init()
     
     tela_principal = pygame.display.set_mode((config.TELA_LARGURA_TOTAL, config.TELA_ALTURA))
-    pygame.display.set_caption("Simulação Robô de Logística (AVL + A* + Fila)")
+    pygame.display.set_caption("Simulação Robô de Logística")
     
     tela_pedidos = pygame.Surface((config.TELA_LARGURA_PEDIDOS, config.TELA_ALTURA))
     tela_mundo = pygame.Surface((config.TELA_LARGURA_MUNDO, config.TELA_ALTURA))
@@ -39,7 +37,7 @@ def main():
         font_media = pygame.font.SysFont('Calibri', 24)
         font_pequena = pygame.font.SysFont('Calibri', 20)
     except:
-        log_manager.add_log("Aviso: Fonte 'Calibri' não encontrada. Usando fonte padrão.") # <-- MUDANÇA
+        log_manager.add_log("Aviso: Fonte 'Calibri' não encontrada. Usando fonte padrão.")
         font_titulo = pygame.font.Font(None, 28)
         font_media = pygame.font.Font(None, 24)
         font_pequena = pygame.font.Font(None, 20)
@@ -90,15 +88,15 @@ def main():
                 elif event.key == pygame.K_SPACE and not input_mode:
                     robot_is_active = not robot_is_active
                     if robot_is_active:
-                        log_manager.add_log("--- ROBÔ INICIADO ---") # <-- MUDANÇA
+                        log_manager.add_log("--- ROBÔ INICIADO ---") 
                     else:
-                        log_manager.add_log("--- ROBÔ PAUSADO ---") # <-- MUDANÇA
+                        log_manager.add_log("--- ROBÔ PAUSADO ---") 
                 
                 elif input_mode:
                     if event.key == pygame.K_RETURN:
                         destino_node = input_text.upper().strip()
                         if destino_node:
-                            log_manager.add_log(f"--- Usuário criou Pedido para: {destino_node} ---") # <-- MUDANÇA
+                            log_manager.add_log(f"--- Usuário criou Pedido para: {destino_node} ---") 
                             meu_pi.add_new_package(random.randint(1, 1000), destino_node)
                         
                         input_mode = False
