@@ -6,10 +6,10 @@
 
 ## Sobre o Projeto
 
-Uma simulação 2D em Python e Pygame de um robô de logística em um armazém. Este projeto demonstra visualmente algoritmos de pathfinding (A*) e o uso de Árvores de Busca Balanceadas (Árvore AVL) para gerenciar uma fila de pedidos em tempo real.
+Uma simulação 2D em Python e Pygame de um robô de logística em um armazém. Este projeto demonstra visualmente algoritmos de pathfinding (A*) e o uso de Árvores de Busca Balanceadas (Árvore AVL e Rubro-Negra) para gerenciar uma fila de pedidos em tempo real.
 
 O projeto utiliza uma arquitetura "híbrida" desacoplada:
-* **Cérebro de Alto Nível (Raspberry Pi):** Um simulador (`cerebro_pi.py`) que toma decisões estratégicas, como calcular a rota ideal (A*) e gerenciar a fila de pedidos (AVL).
+* **Cérebro de Alto Nível (Raspberry Pi):** Um simulador (`cerebro_pi.py`) que toma decisões estratégicas, como calcular a rota ideal (A*) e gerenciar a fila de pedidos (AVL e Rubro-Negra).
 * **Controlador de Baixo Nível (ESP32):** Um simulador (`robo.py`) que apenas executa comandos simples ("Vá para frente", "Pare") e reporta status (sensores, chegada).
 
 -----
@@ -54,8 +54,8 @@ O projeto utiliza uma arquitetura "híbrida" desacoplada:
 
 * **Simulação 2D:** Interface gráfica com 3 painéis (Controle, Mundo, Status) construída com Pygame.
 * **Pathfinding com A*:** O robô usa o algoritmo A-star (A*) para encontrar o caminho mais curto entre dois nós no mapa do armazém.
-* **Fila de Pedidos com Árvore AVL:**
-    * Novos pedidos são adicionados a uma **Árvore AVL**, que se mantém balanceada.
+* **Fila de Pedidos com Árvore AVL e Rubro-Negra:**
+    * Novos pedidos são adicionados a uma **Árvore AVL e Rubro-Negra**, que se mantém balanceada.
     * O robô sempre pega o pedido com o **menor ID** (o nó mais à esquerda da árvore) como prioridade.
     * Quando um pedido é concluído, o nó é **removido** da árvore.
 * **Visualização de Dados:**
