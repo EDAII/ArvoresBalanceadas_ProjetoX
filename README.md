@@ -6,7 +6,11 @@
 
 ## Sobre o Projeto
 
-Este projeto é uma simulação de um sistema de logistica 
+Uma simulação 2D em Python e Pygame de um robô de logística em um armazém. Este projeto demonstra visualmente algoritmos de pathfinding (A*) e o uso de Árvores de Busca Balanceadas (Árvore AVL) para gerenciar uma fila de pedidos em tempo real.
+
+O projeto utiliza uma arquitetura "híbrida" desacoplada:
+* **Cérebro de Alto Nível (Raspberry Pi):** Um simulador (`cerebro_pi.py`) que toma decisões estratégicas, como calcular a rota ideal (A*) e gerenciar a fila de pedidos (AVL).
+* **Controlador de Baixo Nível (ESP32):** Um simulador (`robo.py`) que apenas executa comandos simples ("Vá para frente", "Pare") e reporta status (sensores, chegada).
 
 -----
 
