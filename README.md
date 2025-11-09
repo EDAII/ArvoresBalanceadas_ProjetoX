@@ -115,8 +115,7 @@ Este projeto é uma simulação de um sistema de logistica
     ```bash
     pip install pygame astar
     ```
-5.  **(Opcional) Adicione uma imagem:** Para substituir o quadrado do robô, adicione uma imagem PNG com fundo transparente na pasta raiz e nomeie-a **`robot.png`**.
-6.  **Execute a simulação:**
+5.  **Execute a simulação:**
     ```bash
     python main.py
     ```
