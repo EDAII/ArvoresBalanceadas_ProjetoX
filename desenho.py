@@ -40,6 +40,33 @@ def desenhar_avl_tree(surface, node, x, y, h_spacing, v_spacing, font):
         pygame.draw.line(surface, config.COR_CINZA, (x, y + 20), (x_filho_dir, y_filho - 20), 2)
         desenhar_avl_tree(surface, node.right, x_filho_dir, y_filho, h_spacing / 2, v_spacing, font)
 
+def desenhar_rb_tree(surface, node, nil_node, x, y, h_spacing, v_spacing, font):
+    """
+    Função recursiva para desenhar a Árvore Red-Black no dashboard.
+    node: nó atual
+    nil_node: referência ao nó NIL da árvore (sentinela)
+    """
+    if node is None or node == nil_node:
+        return
+    
+    
+    cor_no = config.COR_VERMELHO if node.color == "RED" else config.COR_PRETO
+    
+    pygame.draw.circle(surface, cor_no, (int(x), int(y)), 20)
+    desenhar_texto(surface, node.key, (int(x) - 12, int(y) - 10), font, config.COR_BRANCO)
+    
+    y_filho = y + v_spacing
+    
+    if node.left != nil_node:
+        x_filho_esq = x - h_spacing
+        pygame.draw.line(surface, config.COR_CINZA, (x, y + 20), (x_filho_esq, y_filho - 20), 2)
+        desenhar_rb_tree(surface, node.left, nil_node, x_filho_esq, y_filho, h_spacing / 2, v_spacing, font)
+    
+    if node.right != nil_node:
+        x_filho_dir = x + h_spacing
+        pygame.draw.line(surface, config.COR_CINZA, (x, y + 20), (x_filho_dir, y_filho - 20), 2)
+        desenhar_rb_tree(surface, node.right, nil_node, x_filho_dir, y_filho, h_spacing / 2, v_spacing, font)
+
 
 # --- PAINEL DE PEDIDOS (ESQUERDA) ---
 def desenhar_painel_pedidos(surface, font_titulo, font_media, font_pequena,
@@ -174,13 +201,7 @@ def desenhar_dashboard(surface, cerebro_pi, robo, font_titulo, font_media, font_
     rb_tree_start_y = y + 40
     desenhar_texto(surface, "Árvore Red-Black", (rb_panel_x - 70, y), font_media, config.COR_BRANCO)
 
-    # Placeholder para a futura árvore Red-Black
-    # No futuro, chamaríamos uma função como:
-    # desenhar_rb_tree(surface, cerebro_pi.rb_tree.root, rb_panel_x, rb_tree_start_y, ...)
-    
-    # Desenha um placeholder visual:
-    desenhar_texto(surface, "[Em Breve]", (rb_panel_x - 40, rb_tree_start_y + 40), font_pequena, config.COR_CINZA)
-    # Exemplo de nó raiz (preto) e filho (vermelho)
-    pygame.draw.circle(surface, config.COR_PRETO, (int(rb_panel_x), int(rb_tree_start_y)), 20)
-    pygame.draw.line(surface, config.COR_CINZA, (rb_panel_x, rb_tree_start_y+20), (rb_panel_x+30, rb_tree_start_y+50-20), 2)
-    pygame.draw.circle(surface, config.COR_VERMELHO, (int(rb_panel_x + 30), int(rb_tree_start_y + 50)), 20)
+
+    desenhar_rb_tree(surface, cerebro_pi.rb_tree.root, cerebro_pi.rb_tree.NIL,
+                    rb_panel_x, rb_tree_start_y, 
+                    h_spacing=50, v_spacing=50, font=font_pequena)

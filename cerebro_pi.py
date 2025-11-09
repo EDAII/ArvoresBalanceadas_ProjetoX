@@ -2,6 +2,7 @@ from astar import AStar, find_path
 import config
 import math
 from avl_tree import AVLTree
+from rb_tree import RBTree
 import log_manager 
 
 class CerebroPi(AStar):
@@ -20,6 +21,7 @@ class CerebroPi(AStar):
         self.proximo_no = None
         
         self.inventory_tree = AVLTree()
+        self.rb_tree = RBTree()  
         self.active_job_key = None 
 
     # --- Funções A* ---
@@ -45,6 +47,7 @@ class CerebroPi(AStar):
             log_manager.add_log(f"Raspberry: Já estamos em '{no_destino_final}'. Entregando instantaneamente.")
             log_manager.add_log(f"Raspberry: Entregando pacote {self.active_job_key}!")
             self.inventory_tree.delete(self.active_job_key)
+            self.rb_tree.delete(self.active_job_key)  
             self.active_job_key = None
             self.status = "PARADO" 
             self.no_destino = None
@@ -89,6 +92,7 @@ class CerebroPi(AStar):
             log_manager.add_log(f"Raspberry: Entregando pacote {self.active_job_key}!")
             
             self.inventory_tree.delete(self.active_job_key)
+            self.rb_tree.delete(self.active_job_key)  
             self.active_job_key = None
             self.status = "PARADO"
             self.rota_calculada = []
@@ -108,7 +112,7 @@ class CerebroPi(AStar):
 
     def add_new_package(self, package_id, location_node):
         """
-        Adiciona um novo PEDIDO à fila (Árvore AVL).
+        Adiciona um novo PEDIDO à fila (Árvores AVL e Red-Black).
         """
         if location_node not in self.mapa:
             log_manager.add_log(f"Raspberry: Ignorando pedido. Localização '{location_node}' não existe.")
@@ -116,6 +120,7 @@ class CerebroPi(AStar):
 
         log_manager.add_log(f"Raspberry: Pedido {package_id} para {location_node} registrado na fila.")
         self.inventory_tree.insert(package_id, location_node)
+        self.rb_tree.insert(package_id, location_node)  
         return True
 
     def check_for_new_job(self):
