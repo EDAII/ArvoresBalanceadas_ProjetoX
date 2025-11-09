@@ -1,1 +1,0 @@
-Main-Class: br.com.locadora.main.Main
