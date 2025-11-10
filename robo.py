@@ -10,7 +10,6 @@ class Robo(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
         
-        # --- MUDANÇA AQUI: Carregar a imagem PNG ---
         try:
             # Tenta carregar a imagem 'robot.png' da pasta do projeto
             original_image = pygame.image.load("robot.png").convert_alpha()
@@ -23,7 +22,6 @@ class Robo(pygame.sprite.Sprite):
             self.image.fill(config.COR_AZUL_CLARO)
         
         self.rect = self.image.get_rect(center=(x, y))
-        # --- FIM DA MUDANÇA ---
         
         # Posição vetorial (permite floats para movimento suave)
         self.pos = pygame.math.Vector2(x, y)
