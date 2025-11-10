@@ -19,7 +19,7 @@ Esse projeto é uma simulação de uma proposta de um robô que será desenvolvi
 </div>
 
 <div align="center">
-<img src="imagensReadme/arquitetura 2.png" alt="inicial" style=" max-width: 50%; height: auto; margin-bottom: 20px;">
+<img src="imagensReadme/arquitetura 3.png" alt="inicial" style=" max-width: 50%; height: auto; margin-bottom: 20px;">
 </div>
 
 -----
