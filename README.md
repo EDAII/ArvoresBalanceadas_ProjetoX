@@ -22,6 +22,13 @@ Esse projeto é uma simulação de uma proposta de um robô que será desenvolvi
 <img src="imagensReadme/arquitetura 3.png" alt="inicial" style=" max-width: 50%; height: auto; margin-bottom: 20px;">
 </div>
 
+<div align="center">
+  <font size="4"><p style="text-align: center; margin-bottom: 50px;"><b>Figura 2: Desenho do Robô</b></p></font>
+</div>
+
+<div align="center">
+<img src="imagensReadme/modelagemInicial.jpg" alt="inicial" style=" max-width: 50%; height: auto; margin-bottom: 20px;">
+</div>
 -----
 
 ## Contribuidores
@@ -90,7 +97,7 @@ Esse projeto é uma simulação de uma proposta de um robô que será desenvolvi
 ## Screenshots
 
 <div align="center">
-  <font size="4"><p style="text-align: center; margin-bottom: 50px;"><b>Figura 2: Nosso Projeto Rodando</b></p></font>
+  <font size="4"><p style="text-align: center; margin-bottom: 50px;"><b>Gif 1: Nosso Projeto Rodando</b></p></font>
 </div>
 
 <div align="center">
