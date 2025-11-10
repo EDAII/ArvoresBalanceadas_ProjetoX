@@ -10,7 +10,17 @@ Uma simulação 2D em Python e Pygame de um robô de logística em um armazém. 
 
 O projeto utiliza uma arquitetura "híbrida" desacoplada:
 * **Cérebro de Alto Nível (Raspberry Pi):** Um simulador (`cerebro_pi.py`) que toma decisões estratégicas, como calcular a rota ideal (A*) e gerenciar a fila de pedidos (AVL e Rubro-Negra).
-* **Controlador de Baixo Nível (ESP32):** Um simulador (`robo.py`) que apenas executa comandos simples ("Vá para frente", "Pare") e reporta status (sensores, chegada).
+* **Controlador de Baixo Nível (ESP32):** Um simulador (`robo.py`) que apenas executa comandos simples ("Vá para frente", "Pare") e reporta status (sensores, chegada e aciona empuxo pela F722).
+
+Esse projeto é uma simulação de uma proposta de um robô que será desenvolvido, a figura 1 a seguir mostra toda a arquitetura de sensores e microcontroladores que serão utilizados, contudo, o cenário do robô real a raspberry irá ficar responsável por rodar algoritmos bioinspirados para as contantes de PID, e para se adequar ao conteúdo da disciplina trocamos a responsabilidade da raspberry para rodar as árvores AVL e Red Black:
+
+<div align="center">
+  <font size="4"><p style="text-align: center; margin-bottom: 50px;"><b>Figura 1: Arquitetura do Projeto</b></p></font>
+</div>
+
+<div align="center">
+<img src="imagensReadme/arquitetura 2.png" alt="inicial" style=" max-width: 50%; height: auto; margin-bottom: 20px;">
+</div>
 
 -----
 
@@ -59,7 +69,7 @@ O projeto utiliza uma arquitetura "híbrida" desacoplada:
     * O robô sempre pega o pedido com o **menor ID** (o nó mais à esquerda da árvore) como prioridade.
     * Quando um pedido é concluído, o nó é **removido** da árvore.
 * **Visualização de Dados:**
-    * A Árvore AVL de pedidos é desenhada e atualizada em tempo real, permitindo ver as **rotações** de balanceamento quando nós são inseridos ou removidos.
+    * A Árvore AVL e Red Black de pedidos é desenhada e atualizada em tempo real, permitindo ver as **rotações** de balanceamento quando nós são inseridos ou removidos.
     * Um painel de "Log do Sistema" mostra todas as ações do robô e da árvore.
 * **Controle Interativo:**
     * **Pausar/Iniciar:** A barra de espaço alterna o estado do robô (ATIVO/PAUSADO).
@@ -80,27 +90,11 @@ O projeto utiliza uma arquitetura "híbrida" desacoplada:
 ## Screenshots
 
 <div align="center">
-  <font size="4"><p style="text-align: center; margin-bottom: 50px;"><b>Figura 1: Nosso Projeto Rodando</b></p></font>
+  <font size="4"><p style="text-align: center; margin-bottom: 50px;"><b>Figura 2: Nosso Projeto Rodando</b></p></font>
 </div>
 
 <div align="center">
 <img src="imagensReadme/apresentacao.gif" alt="inicial" style=" max-width: 50%; height: auto; margin-bottom: 20px;">
-</div>
-
-<div align="center">
-  <font size="4"><p style="text-align: center; margin-bottom: 50px;"><b>Figura 2: Código da Busca Binária</b></p></font>
-</div>
-
-<div align="center">
-<img src="Assets/Images/codigoBusca.png" alt="inicial" style=" max-width: 50%; height: auto; margin-bottom: 20px;">
-</div>
-
-<div align="center">
-  <font size="4"><p style="text-align: center; margin-bottom: 50px;"><b>Figura 3: Código da Busca Linear</b></p></font>
-</div>
-
-<div align="center">
-<img src="Assets/Images/buscaLinear.png" alt="inicial" style=" max-width: 50%; height: auto; margin-bottom: 20px;">
 </div>
 
 -----
