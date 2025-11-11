@@ -2,7 +2,7 @@
 
 **Conteúdo da Disciplina**: Ávores Balanceadas
 
------
+---
 
 ## Sobre o Projeto
 
@@ -29,7 +29,8 @@ Esse projeto é uma simulação de uma proposta de um robô que será desenvolvi
 <div align="center">
 <img src="imagensReadme/modelagemInicial.jpg" alt="inicial" style=" max-width: 50%; height: auto; margin-bottom: 20px;">
 </div>
------
+
+---
 
 ## Contribuidores
 
@@ -84,7 +85,7 @@ Esse projeto é uma simulação de uma proposta de um robô que será desenvolvi
     * **Pedidos Prioritários:** Clicar diretamente em um nó no mapa cria um pedido de prioridade máxima (ID 0).
 * **Design Modular:** O mapa do armazém (nós e conexões) é definido inteiramente no `config.py`, permitindo fácil expansão ou modificação do layout.
 
------
+---
 
 ## Tecnologias Utilizadas
 
@@ -92,7 +93,7 @@ Esse projeto é uma simulação de uma proposta de um robô que será desenvolvi
 * **Pygame:** Para o loop principal, visualização e manipulação de eventos.
 * **`astar` (biblioteca):** Para a implementação do algoritmo A*.
 
------
+---
 
 ## Screenshots
 
@@ -124,7 +125,7 @@ Esse projeto é uma simulação de uma proposta de um robô que será desenvolvi
     ```bash
     python main.py
     ```
------
+---
 
 ## Como Usar
 
@@ -141,15 +142,15 @@ Esse projeto é uma simulação de uma proposta de um robô que será desenvolvi
     * Ao chegar, o robô entregará o pacote, o nó será **removido** da Árvore AVL (que se rebalanceará), e ele pegará o próximo pedido da fila.
 5.  **Pause/Continue:** Você pode apertar **ESPAÇO** a qualquer momento para pausar ou continuar o trabalho do robô.
 
------
+---
 
 ## Vídeo
 
-<a href="https://youtu.be/TFeyVYnvyy4" target="_blank">
+<a href="https://youtu.be/4CvQMOwoJzA" target="_blank">
     <p align="center"><strong>Vídeo do Projeto</strong></p>
 </a>
 <p align="center">
-  <a href="https://youtu.be/TFeyVYnvyy4" target="_blank">
-    <img src="https://img.youtube.com/vi/TFeyVYnvyy4/0.jpg" alt="Vídeo 01" width="480">
+  <a href="https://youtu.be/4CvQMOwoJzA4" target="_blank">
+    <img src="https://img.youtube.com/vi/4CvQMOwoJzA/0.jpg" alt="Vídeo 01" width="480">
   </a>
 </p>
